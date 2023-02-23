@@ -1,4 +1,5 @@
 import json
+from typing import List
 
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -10,6 +11,7 @@ from HW_27.settings import TOTAL_ON_PAGE
 from users.models import User, Location
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class UserListView(ListView):
     model = User
 
@@ -32,7 +34,7 @@ class UserListView(ListView):
                 "password": user.password,
                 "role": user.role,
                 "age": user.age,
-                "location": list(map(str, user.location.all())),
+                "location": str(user.location),
             })
 
         response = {
@@ -44,6 +46,7 @@ class UserListView(ListView):
         return JsonResponse(response, safe=False)
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class UserDetailView(DetailView):
     model = User
 
@@ -58,7 +61,7 @@ class UserDetailView(DetailView):
             "password": user.password,
             "role": user.role,
             "age": user.age,
-            "location": map(str, user.location.all()),
+            "location": str(user.location),
         })
 
 
@@ -98,7 +101,7 @@ class UserCreateView(CreateView):
             "password": user.password,
             "role": user.role,
             "age": user.age,
-            "location": list(map(str, user.location.all()))
+            "location": str(user.location),
         })
 
 
@@ -137,7 +140,7 @@ class UserUpdateView(UpdateView):
             "password": self.object.password,
             "role": self.object.role,
             "age": self.object.age,
-            "location_id": list(map(str, self.object.location.all()))
+            "location_id": str(self.object.location),
         })
 
 

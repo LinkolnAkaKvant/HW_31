@@ -40,8 +40,8 @@ class AdListView(ListView):
                 "description": ad.description,
                 "is_published": ad.is_published,
                 "image": ad.image.url,
-                "category": ad.category,
-                "author": ad.author,
+                "category": ad.category_id,
+                "author": ad.author_id,
             })
 
         response = {
@@ -67,8 +67,8 @@ class AdDetailView(DetailView):
             "description": ad.description,
             "is_published": ad.is_published,
             "image": ad.image.url,
-            "category_id": ad.category_id,
-            "author_id": ad.author_id,
+            "category": ad.category_id,
+            "author": ad.author_id,
         })
 
 
