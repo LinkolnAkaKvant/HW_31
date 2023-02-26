@@ -7,8 +7,8 @@ urlpatterns = [
     path('<int:pk>/create/', views.UserCreateView.as_view()),
     path('<int:pk>/update/', views.UserUpdateView.as_view()),
     path('<int:pk>/delete/', views.UserDeleteView.as_view()),
-    path('loc/', views.LocationListView.as_view()),
-    path('loc/create/', views.LocationCreateView.as_view()),
-    path('loc/<int:pk>/', views.LocationDetailView.as_view()),
-    path('loc/<int:pk>/delete/', views.LocationDeleteView.as_view()),
+    # path('location/', views.LocationListView.as_view()),
+    # path('location/create/', views.LocationCreateView.as_view()),
+    # path('location/<int:pk>/', views.LocationDetailView.as_view()),
+    # path('location/<int:pk>/delete/', views.LocationDeleteView.as_view()),
 ]
