@@ -4,12 +4,13 @@ from rest_framework import routers
 from rest_framework.routers import SimpleRouter
 
 from ads import views
-from ads.views import SelectionViewSet
+from ads.views import SelectionViewSet, CategoryViewSet
 from users.views import LocationViewSet
 
 router = routers.SimpleRouter()
 router.register("location", LocationViewSet)
 router.register("selection", SelectionViewSet)
+router.register("cat", CategoryViewSet)
 
 
 urlpatterns = [

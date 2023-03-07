@@ -14,7 +14,7 @@ from HW_27.settings import TOTAL_ON_PAGE
 from ads.models import Category, Ad, Selection
 from ads.permissions import IsOwner, IsStaff
 from ads.serializers import AdSerializer, AdDetailSerializer, AdListSerializer, SelectionSerializer, \
-    SelectionCreateSerializer
+    SelectionCreateSerializer, CategorySerializer
 from users.models import User
 
 
@@ -67,6 +67,11 @@ class AdViewSet(ModelViewSet):
         return super().list(request, *args, **kwargs)
 
 
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class AdImageView(UpdateView):
     model = Ad
@@ -112,91 +117,24 @@ class AuthorAdDetailView(View):
         return JsonResponse(response)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class CategoryListView(ListView):
-    model = Category
-
-    def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
-
-        self.object_list = self.object_list.order_by("name")
-
-        paginator = Paginator(self.object_list, TOTAL_ON_PAGE)
-        page_number = request.GET.get("page")
-        page_obj = paginator.get_page(page_number)
-
-        categories = []
-        for cat in page_obj:
-            categories.append({
-                "id": cat.id,
-                "name": cat.name,
-            })
-
-        response = {
-            "items": categories,
-            "num_pages": paginator.num_pages,
-            "total": paginator.count
-        }
-
-        return JsonResponse(response, safe=False)
-
-
-@method_decorator(csrf_exempt, name="dispatch")
-class CategoryCreateView(CreateView):
-    model = Category
-    fields = ["name"]
-
-    def post(self, request, *args, **kwargs):
-        category_data = json.loads(request.body)
-
-        category = Category.objects.create(
-            name=category_data["name"],
-        )
-
-        return JsonResponse({
-            "id": category.id,
-            "name": category.name,
-        })
-
-
-class CategoryDetailView(DetailView):
-    model = Category
-
-    def get(self, request, *args, **kwargs):
-        category = self.get_object()
-
-        return JsonResponse({
-            "id": category.id,
-            "name": category.name,
-        })
-
-
-@method_decorator(csrf_exempt, name="dispatch")
-class CategoryDeleteView(DeleteView):
-    model = Category
-    success_url = "/"
-
-    def delete(self, request, *args, **kwargs):
-        super().delete(request, *args, **kwargs)
-
-        return JsonResponse({"status": "ok"}, status=200)
-
-
 class SelectionViewSet(ModelViewSet):
+    serializer_class = SelectionSerializer
     queryset = Selection.objects.all()
 
     default_permission = [AllowAny]
     permissions = {
         "create": [IsAuthenticated],
         "update": [IsAuthenticated, IsOwner],
-        "partial_update": [IsAuthenticated, IsOwner],
+        'partial_update': [IsAuthenticated, IsOwner],
         "destroy": [IsAuthenticated, IsOwner]
     }
 
     default_serializer = SelectionSerializer
-    serializers = {
-        "create": SelectionCreateSerializer,
-    }
+    serializers = {"create": SelectionCreateSerializer,
+                   }
 
     def get_permissions(self):
         return [permission() for permission in self.permissions.get(self.action, self.default_permission)]
+
+    def get_serializer_class(self):
+        return self.serializers.get(self.action, self.default_serializer)
